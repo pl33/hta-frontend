@@ -39,6 +39,10 @@ dependencies:
   hta_api:
     path: ./api/hta_api
 
+  url_launcher: ^6.2.1
+  openid_client: ^0.4.8
+  shared_preferences: ^2.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
