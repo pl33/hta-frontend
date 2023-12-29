@@ -200,9 +200,9 @@ class Entry {
             ? null
             : num.parse(json[r'user_id'].toString()),
         remarks: mapValueOfType<String>(json, r'remarks'),
-        systole: mapValueOfType<double>(json, r'systole'),
-        diastole: mapValueOfType<double>(json, r'diastole'),
-        pulse: mapValueOfType<double>(json, r'pulse'),
+        systole: mapValueOfType<double>(json, r'systole') ?? mapValueOfType<int>(json, r'systole')?.toDouble(),
+        diastole: mapValueOfType<double>(json, r'diastole') ?? mapValueOfType<int>(json, r'diastole')?.toDouble(),
+        pulse: mapValueOfType<double>(json, r'pulse') ?? mapValueOfType<int>(json, r'pulse')?.toDouble(),
         endTime: mapDateTime(json, r'end_time', ''),
       );
     }
