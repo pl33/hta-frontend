@@ -170,3 +170,40 @@ Future<bool> showConfirmDeleteDialog(BuildContext context) async {
 
   return confirm ?? false;
 }
+
+/// Show a dialog to confirm the discarding
+Future<bool> showConfirmDiscardDialog(BuildContext context) async {
+  final confirm = await showDialog<bool?>(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        title: const Text('Confirm Discard Changes'),
+        content: const Text('Are you sure to discard all changes?'),
+        actions: <Widget>[
+          ElevatedButton.icon(
+            icon: const Icon(Icons.delete),
+            label: const Text("Discard"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              Navigator.pop(dialogContext, true);
+            },
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.arrow_back),
+            label: const Text("Go Back"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            onPressed: () {
+              Navigator.pop(dialogContext, false);
+            },
+          ),
+        ],
+      );
+    },
+  );
+
+  return confirm ?? false;
+}

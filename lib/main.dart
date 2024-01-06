@@ -15,6 +15,7 @@ import 'package:openapi_generator_annotations/openapi_generator_annotations.dart
 import 'connect_server.dart';
 import 'categories_proxy.dart';
 import 'categories_view.dart';
+import 'entries_view.dart';
 
 void main() {
   runApp(const HtaApp());
@@ -50,6 +51,9 @@ class GlobalAppState {
   /// Categories proxy
   CategoriesProxy? categoriesProxy;
 
+  /// Entries controller
+  EntriesViewController? entriesViewController;
+
   /// This function can be called once to set a new login state
   Future<void> initializeLoginState(LoginState state) async {
     if (_loginState != null) {
@@ -71,10 +75,12 @@ class GlobalAppState {
         apiClient = await _loginState!.makeApiClient();
         categoriesProxy = CategoriesProxy(client: apiClient);
         await categoriesProxy!.reloadAll();
+        entriesViewController = EntriesViewController(client: apiClient!);
         loginStateValue.value = true;
       } else {
         apiClient = null;
         categoriesProxy = null;
+        entriesViewController = null;
         loginStateValue.value = false;
       }
     }
@@ -106,6 +112,13 @@ class GlobalAppState {
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.monitor_heart_rounded),
+            title: const Text("Health Entries"),
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed(EntriesPage.route);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.category),
@@ -201,10 +214,11 @@ class _HtaAppState extends State<HtaApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: appState.isLoggedIn() ? CategoriesPage(appState: appState) : ConnectServerPage(loginState: appState._loginState!),
-        initialRoute: appState.isLoggedIn() ? CategoriesPage.route : ConnectServerPage.route,
+        home: appState.isLoggedIn() ? EntriesPage(appState: appState) : ConnectServerPage(loginState: appState._loginState!),
+        initialRoute: appState.isLoggedIn() ? EntriesPage.route : ConnectServerPage.route,
         routes: {
           ConnectServerPage.route: (context) => ConnectServerPage(loginState: appState._loginState!),
+          EntriesPage.route: (context) => EntriesPage(appState: appState),
           CategoriesPage.route: (context) => CategoriesPage(appState: appState),
         },
       );

@@ -10,7 +10,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hta_api/api.dart' as api;
 import 'package:flutter/material.dart';
-import 'package:hta_frontend_flutter/categories_view.dart';
+import 'package:hta_frontend_flutter/entries_view.dart';
 import 'package:openid_client/openid_client.dart' as oidc;
 import 'connect_server_io.dart'
     if (dart.library.html) 'connect_server_browser.dart';
@@ -249,7 +249,7 @@ class _ConnectServerPageState extends State<ConnectServerPage> {
                       .then(
                         (value) => setState(() {
                           errorMessage = null;
-                          Navigator.of(context).pushReplacementNamed(CategoriesPage.route);
+                          Navigator.of(context).pushReplacementNamed(EntriesPage.route);
                         }),
                       )
                       .onError((error, stackTrace) => setState(() {
