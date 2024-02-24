@@ -289,5 +289,27 @@ class GlobalAppState {
       AppLoginLoggedIn() => tmpState,
     };
   }
+
+  /// Get name of logged in user if logged in or null
+  String? loginName() {
+    AppLoginState tmpState = loginState.value;
+    return switch (tmpState) {
+      AppLoginUninitialized() => null,
+      AppLoginNotAssociated() => null,
+      AppLoginLoggedOut() => null,
+      AppLoginLoggedIn() => tmpState.credential.idToken.claims.name,
+    };
+  }
+
+  /// Get expiration time of login if logged in or null
+  DateTime? loginExpiration() {
+    AppLoginState tmpState = loginState.value;
+    return switch (tmpState) {
+      AppLoginUninitialized() => null,
+      AppLoginNotAssociated() => null,
+      AppLoginLoggedOut() => null,
+      AppLoginLoggedIn() => tmpState.credential.idToken.claims.expiry,
+    };
+  }
 }
 

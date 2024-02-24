@@ -8,6 +8,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:openapi_generator_annotations/openapi_generator_annotations.dart';
 
 import 'connect_server.dart';
@@ -116,20 +117,44 @@ Drawer makeDefaultDrawer(BuildContext context, GlobalAppState appState) {
         Expanded(
           child: ListView(
             children: [
-              const DrawerHeader(
-                  decoration: BoxDecoration(
+              DrawerHeader(
+                  decoration: const BoxDecoration(
                     color: Colors.blue,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Health Tracker App",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      GestureDetector(
+                        child: Text(
+                          appState.loginName() ?? "",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        onDoubleTap: () {
+                          Navigator.of(context).pop();
+
+                          final date = appState.loginExpiration();
+                          if (date != null) {
+                            final serverUrl = appState.serverUrl;
+                            final dateStr = DateFormat.yMMMd().format(date);
+                            final timeStr = DateFormat.Hms().format(date);
+                            final snackbar = SnackBar(content: Text(
+                                "Logged in to \"$serverUrl\". Login expires on $dateStr at $timeStr"
+                            ));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                snackbar);
+                          }
+                        },
+                      )
                     ],
                   )
               ),
