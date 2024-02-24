@@ -14,6 +14,7 @@ import 'package:hta_frontend_flutter/connect_server.dart';
 import 'package:hta_frontend_flutter/date_time_edit.dart';
 import 'package:intl/intl.dart';
 
+import 'app_login_state.dart';
 import 'categories_proxy.dart';
 import 'dialogs.dart';
 import 'main.dart';
@@ -30,35 +31,41 @@ class EntriesPage extends StatefulWidget {
 }
 
 class _EntriesPageState extends State<EntriesPage> {
+  /// Login info if logged in or null
+  AppLoginLoggedIn? loginInfo;
+
   /// Handles login state changes
   void _onLoginStateChangeCb() {
-    setState(() {});
+    setState(() {
+      loginInfo = widget.appState.loginInfo();
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    widget.appState.loginStateValue.addListener(_onLoginStateChangeCb);
+    widget.appState.addListener(_onLoginStateChangeCb);
+    loginInfo = widget.appState.loginInfo();
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.appState.loginStateValue.removeListener(_onLoginStateChangeCb);
+    widget.appState.removeListener(_onLoginStateChangeCb);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.appState.isLoggedIn()) {
+    if (loginInfo != null) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Health Entries"),
         ),
-        drawer: widget.appState.makeDefaultDrawer(context),
+        drawer: makeDefaultDrawer(context, widget.appState),
         body: EntriesView(
-          controller: widget.appState.entriesViewController!,
-          categoriesProxy: widget.appState.categoriesProxy!,
+          controller: loginInfo!.entriesViewController,
+          categoriesProxy: loginInfo!.categoriesProxy,
         ),
         floatingActionButton: ElevatedButton.icon(
           icon: const Icon(Icons.add),
@@ -67,8 +74,8 @@ class _EntriesPageState extends State<EntriesPage> {
             backgroundColor: Colors.primaries.first,
           ),
           onPressed: () {
-            entryShowNewDialog(context, widget.appState.entriesViewController!,
-                widget.appState.categoriesProxy!);
+            entryShowNewDialog(context, loginInfo!.entriesViewController,
+                loginInfo!.categoriesProxy);
           },
         ),
       );

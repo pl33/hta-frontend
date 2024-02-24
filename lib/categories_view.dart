@@ -9,11 +9,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hta_frontend_flutter/main.dart';
 
+import 'app_login_state.dart';
 import 'categories_proxy.dart';
 import 'connect_server.dart';
 import 'dialogs.dart';
+import 'main.dart';
 
 class CategoriesPage extends StatefulWidget {
   final GlobalAppState appState;
@@ -27,26 +28,32 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
+  /// Login info if logged in or null
+  AppLoginLoggedIn? loginInfo;
+
   /// Handles login state changes
   void _onLoginStateChangeCb() {
-    setState(() {});
+    setState(() {
+      loginInfo = widget.appState.loginInfo();
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    widget.appState.loginStateValue.addListener(_onLoginStateChangeCb);
+    widget.appState.addListener(_onLoginStateChangeCb);
+    loginInfo = widget.appState.loginInfo();
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.appState.loginStateValue.removeListener(_onLoginStateChangeCb);
+    widget.appState.removeListener(_onLoginStateChangeCb);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.appState.isLoggedIn()) {
+    if (loginInfo != null) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme
@@ -55,8 +62,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
               .inversePrimary,
           title: const Text("Categories"),
         ),
-        drawer: widget.appState.makeDefaultDrawer(context),
-        body: CategoriesView(categoriesProxy: widget.appState.categoriesProxy!),
+        drawer: makeDefaultDrawer(context, widget.appState),
+        body: CategoriesView(categoriesProxy: loginInfo!.categoriesProxy),
         floatingActionButton: ElevatedButton.icon(
           icon: const Icon(Icons.add),
           label: const Text("Add"),
@@ -64,7 +71,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
             backgroundColor: Colors.primaries.first,
           ),
           onPressed: () {
-            categoriesShowCreateView(context, widget.appState.categoriesProxy!);
+            categoriesShowCreateView(context, loginInfo!.categoriesProxy);
           },
         ),
       );
