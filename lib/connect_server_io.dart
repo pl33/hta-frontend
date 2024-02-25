@@ -23,15 +23,25 @@ Future<oidc.Credential?> getBrowserRedirectCredential(Iterable<String> scopes) a
 
 Future<void> _openWeb(Uri uri) async {
   if (await canLaunchUrl(uri) || io.Platform.isAndroid) {
-    await launchUrl(uri);
+    LaunchMode mode;
+    if (io.Platform.isAndroid || io.Platform.isIOS) {
+      mode = LaunchMode.inAppWebView;
+    } else if (io.Platform.isWindows || io.Platform.isLinux || io.Platform.isMacOS) {
+      mode = LaunchMode.externalApplication;
+    } else {
+      mode = LaunchMode.platformDefault;
+    }
+    await launchUrl(uri, mode: mode);
   } else {
     throw "Could not launch $uri";
   }
 }
 
-void _closeWeb() {
-  if (io.Platform.isAndroid || io.Platform.isIOS) {
-    closeInAppWebView();
+Future<void> _closeWeb() async {
+  try {
+    await closeInAppWebView();
+  } on UnimplementedError {
+    // Ignore
   }
 }
 
@@ -55,7 +65,7 @@ Future<oidc.Credential> authenticate(oidc.Client client,
   var cred = await auth.authorize();
 
   // close the webview when finished
-  _closeWeb();
+  await _closeWeb();
 
   return cred;
 }
